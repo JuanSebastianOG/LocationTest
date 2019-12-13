@@ -8,4 +8,36 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="btn_txt_black_background_white">
+
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#E23D3D3D</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:background">@drawable/btn_white</item>
+        <item name="android:layout_width">231dp</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:enabled">true</item>
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:fontFamily">@font/raleway</item>
+    </style>
+
+    <style name="btn_txt_white_background_grey">
+
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#E2FFFFFF</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:background">@drawable/btn_grey</item>
+        <item name="android:layout_width">231dp</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:enabled">true</item>
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:fontFamily">@font/raleway</item>
+    </style>
+
 </resources>

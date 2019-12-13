@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Location</string>
+    <string name="access_token">pk.eyJ1IjoianNlYmFzdGlhbm9nIiwiYSI6ImNrNDJiMGhydDBhOHUzbHBnZzBtaHJtb3QifQ.4ZCPDQjt9bNMyHnymT618Q</string>
+    <string name="user_location_permission_explanation">Se necesita el permiso</string>
+    <string name="user_location_permission_not_granted">No tiene el permiso</string>
+    <string name="new_location">Nueva ubicación: </string>
+
 </resources>
