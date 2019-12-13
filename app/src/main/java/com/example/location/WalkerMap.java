@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
 import com.mapbox.android.core.location.LocationEngineProvider;
@@ -34,6 +38,12 @@ public class WalkerMap extends AppCompatActivity implements
 
     private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
+
+
+    static FirebaseDatabase dbLoc;
+    static DatabaseReference dbUsersClients;
+    static FirebaseAuth registerAuth;
+
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
@@ -56,6 +66,10 @@ public class WalkerMap extends AppCompatActivity implements
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_walker_map);
 
+
+        dbLoc = FirebaseDatabase.getInstance();
+        registerAuth = FirebaseAuth.getInstance();
+
         mapView = findViewById(R.id.mapView2);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -65,7 +79,7 @@ public class WalkerMap extends AppCompatActivity implements
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        mapboxMap.setStyle(Style.TRAFFIC_NIGHT,
+        mapboxMap.setStyle(Style.MAPBOX_STREETS,
                 new Style.OnStyleLoaded() {
                     @Override public void onStyleLoaded(@NonNull Style style) {
                         enableLocationComponent(style);
@@ -174,9 +188,16 @@ public class WalkerMap extends AppCompatActivity implements
                 }
 
                 // Create a Toast which displays the new location's coordinates
-                Toast.makeText(activity,"Nueva ubicacion"+String.valueOf(result.getLastLocation().getLatitude())
+                Toast.makeText(activity,"Nueva ubicacion: "+String.valueOf(result.getLastLocation().getLatitude())
                                 + String.valueOf(result.getLastLocation().getLongitude()),
                         Toast.LENGTH_SHORT).show();
+
+                FirebaseUser user = registerAuth.getCurrentUser();
+                String uid= user.getUid();
+                dbUsersClients =  dbLoc.getReference("userClient");
+                dbUsersClients.child(uid).child("lat").setValue(result.getLastLocation().getLatitude());
+                dbUsersClients.child(uid).child("longi").setValue(result.getLastLocation().getLongitude());
+
 
                 // Pass the new location to the Maps SDK's LocationComponent
                 if (activity.mapboxMap != null && result.getLastLocation() != null) {
