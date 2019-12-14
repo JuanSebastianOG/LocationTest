@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -29,6 +30,8 @@ public class Login extends AppCompatActivity {
     private Button btn_login;
     private TextView frm_email;
     private TextView frm_password;
+    static FirebaseDatabase dbLoc;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,8 @@ public class Login extends AppCompatActivity {
         btn_login= findViewById(R.id.btn_loginN);
         frm_email= findViewById(R.id.frm_email);
         frm_password= findViewById(R.id.frm_password);
+
+        dbLoc = FirebaseDatabase.getInstance();
         loginAuth = FirebaseAuth.getInstance();
 
 
@@ -117,55 +122,65 @@ public class Login extends AppCompatActivity {
         return true;
     }
     private void logInUser(FirebaseUser currentUser){
-        final Intent intent;
         if(currentUser!=null){
 
-
-            Intent in = new Intent(getApplicationContext(), MainActivity.class);
-            in.putExtra("type","client");
-            startActivity(in);
-            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-
             FirebaseUser user = loginAuth.getCurrentUser();
-            /*String uid= user.getUid();
-            Query queryChef = FirebaseDatabase.getInstance().getReference("userChef").orderByChild("userId").equalTo(uid);
-            Query queryClient = FirebaseDatabase.getInstance().getReference("userClient").orderByChild("userId").equalTo(uid);
-            queryChef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //UserChef chefsito = dataSnapshot.getValue(UserChef.class);
-                   /* if(chefsito!=null) {
-                        Log.i("LOGIN", "CHEF" + chefsito.toString());
-                        Intent intent = new Intent(getBaseContext(), ChefActivity.class);
-                        startActivity(intent);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.i("LOGINFAILED","CHEF" );
-                }
-            });
+            String uid= user.getUid();
 
-            queryClient.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query query = FirebaseDatabase.getInstance().getReference("userClient")
+                    .orderByChild("userId").equalTo(uid);
+            query.addListenerForSingleValueEvent(valueEventListener);
+
+            Query ref = dbLoc.getReference("userClient").orderByChild("userId").equalTo(uid);
+
+            // Attach a listener to read the data at our posts reference
+           /* ref.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                   /* UserClient clientito = dataSnapshot.getValue(UserClient.class);
-                    if(clientito!=null) {
-                        Log.i("LOGIN", "CLIENTE");
-                        Intent intent = new Intent(getBaseContext(), Home.class);
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    UserClient user = dataSnapshot.getValue(UserClient.class);
+                    if(user.getTipo().equals("Cliente")){
+                        Intent in = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(in);
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    }else{
+                        Intent intent = new Intent(getBaseContext(), Walker.class);
                         startActivity(intent);
                     }
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.i("LOGINFAILED","CLIENTE");
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
                 }
-            });
-            */
+            });*/
+
+
         } else {
             frm_email.setText("");
             frm_password.setText("");
         }
     }
+    ValueEventListener valueEventListener= new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if(dataSnapshot.exists()){
+                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    UserClient user = snapshot.getValue(UserClient.class);
+                    if(user.getTipo().equals("Cliente")){
+                        Intent in = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(in);
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    }else{
+                        Intent intent = new Intent(getBaseContext(), Walker.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
 }

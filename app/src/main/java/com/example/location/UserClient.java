@@ -9,6 +9,10 @@ public class UserClient {
     double lat;
     double longi;
     String userId;
+
+    public UserClient() {
+    }
+
     String tipo;
 
     public UserClient(String dir, double lat, double longi, String userId, String tipo) {

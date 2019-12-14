@@ -43,11 +43,15 @@ public class WalkerMap extends AppCompatActivity implements
     static FirebaseDatabase dbLoc;
     static DatabaseReference dbUsersClients;
     static FirebaseAuth registerAuth;
-
+    static DatabaseReference dbTrack;
+    static String idTrack;
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
+
+    Track track=new Track("", 0,0,"","");
+
     private LocationChangeListeningActivityLocationCallback callback =
             new LocationChangeListeningActivityLocationCallback(this);
 
@@ -69,6 +73,10 @@ public class WalkerMap extends AppCompatActivity implements
 
         dbLoc = FirebaseDatabase.getInstance();
         registerAuth = FirebaseAuth.getInstance();
+        dbTrack = dbLoc.getReference("track");
+
+        idTrack = dbTrack.push().getKey();
+
 
         mapView = findViewById(R.id.mapView2);
         mapView.onCreate(savedInstanceState);
@@ -176,6 +184,7 @@ public class WalkerMap extends AppCompatActivity implements
          *
          * @param result the LocationEngineResult object which has the last known location within it.
          */
+
         @Override
         public void onSuccess(LocationEngineResult result) {
             WalkerMap activity = activityWeakReference.get();
@@ -194,10 +203,10 @@ public class WalkerMap extends AppCompatActivity implements
 
                 FirebaseUser user = registerAuth.getCurrentUser();
                 String uid= user.getUid();
-                dbUsersClients =  dbLoc.getReference("userClient");
-                dbUsersClients.child(uid).child("lat").setValue(result.getLastLocation().getLatitude());
-                dbUsersClients.child(uid).child("longi").setValue(result.getLastLocation().getLongitude());
 
+                Track track=new Track("",result.getLastLocation().getLatitude(),result.getLastLocation().getLongitude(),uid,idTrack);
+
+                dbTrack.child(idTrack).setValue(track);
 
                 // Pass the new location to the Maps SDK's LocationComponent
                 if (activity.mapboxMap != null && result.getLastLocation() != null) {
